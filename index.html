@@ -3,16 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>数列收敛可视化 - 牛顿迭代法 </title>
+    <title>数列收敛可视化 - 牛顿迭代法</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
-    <!-- 引入 MathJax CDN，支持 LaTeX 语法 -->
+    <!-- 引入 MathJax CDN -->
     <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <!-- 配置 MathJax 渲染参数 -->
+    <!-- 配置 MathJax 支持 $ 作为分隔符 -->
     <script>
         MathJax.config = {
             tex: {
-                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                inlineMath: [['$', '$'], ['\\(', '\\)']], // 支持 $...$ 作为行内公式
                 displayMath: [['$$', '$$'], ['\\[', '\\]']]
             },
             svg: {
@@ -155,7 +155,8 @@
                 </div>
                 <div class="flex items-center space-x-4">
                     <span class="text-sm text-gray-600" id="aValueDisplay">a = 4</span>
-                    <span class="text-sm text-gray-600 bg-red-100 text-red-800 px-2 py-1 rounded-full" id="convergencePointDisplay">收敛点: $\sqrt{4} = 2$</span>
+                    <!-- 修正：收敛点公式的反斜杠转义 -->
+                    <span class="text-sm text-gray-600 bg-red-100 text-red-800 px-2 py-1 rounded-full" id="convergencePointDisplay">收敛点: $\\sqrt{4} = 2.0000$</span>
                 </div>
             </div>
         </div>
@@ -172,8 +173,9 @@
                 <div>
                     <h2 class="text-xl font-semibold text-gray-900 mb-2">牛顿迭代法求平方根</h2>
                     <p class="text-gray-600 mb-4">
+                        <!-- 修正：递推公式和文本中的公式 -->
                         数列递推公式：$$X_{n+1} = \frac{1}{2} \left( X_n + \frac{a}{X_n} \right)$$
-                        其中 $a > 0$ 为自定义参数，数列收敛于 $\sqrt{a}$。增强版提供更大的收敛点显示和局部放大功能，让收敛细节更加清晰可见。
+                        其中 $a > 0$ 为自定义参数，数列收敛于 $\\sqrt{a}$。增强版提供更大的收敛点显示和局部放大功能，让收敛细节更加清晰可见。
                     </p>
                     <div class="flex flex-wrap gap-2">
                         <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">自定义参数</span>
@@ -215,7 +217,7 @@
                         参数配置
                     </h3>
                     <div class="space-y-4">
-                        <!-- 新增a参数配置 -->
+                        <!-- a参数配置 -->
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">参数 $a$（$a > 0$）</label>
                             <div class="flex items-center space-x-3">
@@ -285,7 +287,7 @@
                 <div class="bg-white/70 backdrop-blur-sm rounded-2xl shadow-lg p-6 border border-gray-200/50">
                     <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
                         <i class="fa fa-table text-primary mr-2"></i>
-                        迭代结果分析（收敛目标：$\sqrt{a}$）
+                        迭代结果分析（收敛目标：$\\sqrt{a}$）
                     </h3>
                     <div class="space-y-3 max-h-64 overflow-y-auto pr-2" id="iterationResults">
                         <!-- 结果将在这里动态生成 -->
@@ -305,15 +307,15 @@
                         <div class="flex items-center space-x-4 text-sm text-gray-600">
                             <div class="flex items-center space-x-2">
                                 <div class="w-4 h-4 bg-primary rounded-full"></div>
-                                <span>$$y = \frac{1}{2} \left( x + \frac{a}{x} \right)$$</span>
+                                <span>$y = \\frac{1}{2} \\left( x + \\frac{a}{x} \\right)$</span>
                             </div>
                             <div class="flex items-center space-x-2">
                                 <div class="w-4 h-4 bg-secondary rounded-full"></div>
-                                <span>$$y = x$$</span>
+                                <span>$y = x$</span>
                             </div>
                             <div class="flex items-center space-x-2">
                                 <div class="w-4 h-4 bg-danger rounded-full"></div>
-                                <span>收敛点 $\sqrt{a}$</span>
+                                <span>收敛点 $\\sqrt{a}$</span>
                             </div>
                         </div>
                     </div>
@@ -321,7 +323,7 @@
                         <canvas id="mainCanvas" width="800" height="500" 
                                 class="w-full h-auto border border-gray-200/50 rounded-lg bg-white/50 shadow-inner"></canvas>
                         
-                        <!-- 放大镜效果（只在完整视图显示） -->
+                        <!-- 放大镜效果 -->
                         <div id="magnifier" class="magnifying-glass absolute w-64 h-64 rounded-full pointer-events-none hidden" 
                              style="top: 50px; right: 50px;">
                             <canvas id="magnifierCanvas" width="256" height="256" class="w-full h-full rounded-full"></canvas>
@@ -334,7 +336,7 @@
                     <div class="flex justify-between items-center mb-4">
                         <h3 class="text-lg font-semibold text-gray-900 flex items-center">
                             <i class="fa fa-search-plus text-primary mr-2"></i>
-                            收敛点放大视图（$\sqrt{a}$ 附近）
+                            收敛点放大视图（$\\sqrt{a}$ 附近）
                         </h3>
                         <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
                             <i class="fa fa-search mr-1"></i>
@@ -360,7 +362,7 @@
                     <div class="bg-white/70 backdrop-blur-sm rounded-2xl shadow-lg p-6 border border-gray-200/50">
                         <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
                             <i class="fa fa-search-plus text-primary mr-2"></i>
-                            放大视图（$\sqrt{a}$ 附近）
+                            放大视图（$\\sqrt{a}$ 附近）
                         </h3>
                         <canvas id="dualZoomCanvas" width="400" height="400" 
                                 class="w-full h-auto border border-gray-200/50 rounded-lg bg-white/50 shadow-inner"></canvas>
@@ -381,15 +383,15 @@
                     <p class="text-gray-600 text-sm">
                         牛顿迭代法求解 $f(x) = x^2 - a = 0$ 时，迭代公式为：
                         $$X_{n+1} = X_n - \frac{f(X_n)}{f'(X_n)} = \frac{1}{2} \left( X_n + \frac{a}{X_n} \right)$$
-                        具有二次收敛性，即误差满足 $|X_{n+1} - \sqrt{a}| \leq C |X_n - \sqrt{a}|^2$（$C$ 为常数），收敛速度极快。
+                        具有二次收敛性，即误差满足 $|X_{n+1} - \\sqrt{a}| \leq C |X_n - \\sqrt{a}|^2$（$C$ 为常数），收敛速度极快。
                     </p>
                 </div>
                 <div>
                     <h4 class="font-semibold text-gray-900 mb-2">收敛条件</h4>
                     <p class="text-gray-600 text-sm">
-                        对任意初始值 $X_0 > 0$，数列 $\{X_n\}$ 严格递减且收敛于 $\sqrt{a}$。
+                        对任意初始值 $X_0 > 0$，数列 $\{X_n\}$ 严格递减且收敛于 $\\sqrt{a}$。
                         收敛速度与初始值无关，最终都会快速逼近收敛点。
-                        迭代过程满足：$X_n \geq \sqrt{a}$（$n \geq 1$），即从第二次迭代开始恒大于等于收敛值。
+                        迭代过程满足：$X_n \geq \\sqrt{a}$（$n \geq 1$），即从第二次迭代开始恒大于等于收敛值。
                     </p>
                 </div>
                 <div>
@@ -474,12 +476,12 @@
             }
             
             setupEventListeners() {
-                // 滑块事件 - 新增a参数
+                // 滑块事件 - a参数
                 document.getElementById('aValue').addEventListener('input', (e) => {
                     this.a = parseInt(e.target.value);
                     this.convergencePoint = Math.sqrt(this.a);
                     this.updateDisplayValues();
-                    this.updateZoomView(); // 重新计算缩放视图范围
+                    this.updateZoomView();
                     this.reset();
                 });
                 
@@ -529,9 +531,9 @@
                 // 更新a参数显示
                 document.getElementById('aValueDisplay').textContent = `a = ${this.a}`;
                 document.getElementById('aValueSliderDisplay').textContent = this.a;
-                // 更新收敛点显示（带LaTeX）
+                // 修正：收敛点公式的反斜杠转义（JavaScript中用\\）
                 document.getElementById('convergencePointDisplay').innerHTML = 
-                    `收敛点: $\sqrt{${this.a}} = ${this.convergencePoint.toFixed(4)}$`;
+                    `收敛点: $\\sqrt{${this.a}} = ${this.convergencePoint.toFixed(4)}$`;
                 
                 // 更新其他显示
                 document.getElementById('initialValueDisplay').textContent = this.initialValue.toFixed(1);
@@ -551,7 +553,7 @@
                 const clickX = e.clientX - rect.left;
                 const clickY = e.clientY - rect.top;
                 
-                // 根据当前视图类型转换坐标
+                // 转换坐标
                 let mathX, mathY;
                 if (canvasType === 'main' && this.currentView === 'full') {
                     mathX = this.viewConfigs.full.xMin + (clickX / canvas.width) * (this.viewConfigs.full.xMax - this.viewConfigs.full.xMin);
@@ -692,7 +694,7 @@
                 const config = this.viewConfigs[viewType];
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 
-                // 绘制网格（更密集的网格）
+                // 绘制网格
                 this.drawGrid(ctx, canvas, config, viewType);
                 
                 // 绘制坐标轴
@@ -704,7 +706,7 @@
                 // 绘制直线 y = x
                 this.drawIdentityLine(ctx, canvas, config);
                 
-                // 绘制收敛点（放大显示）
+                // 绘制收敛点
                 this.drawConvergencePoint(ctx, canvas, config, viewType);
                 
                 // 绘制路径和点
@@ -720,7 +722,7 @@
                 ctx.strokeStyle = gridColor;
                 ctx.lineWidth = 1;
                 
-                // 更密集的网格
+                // 网格密度
                 const gridStep = viewType.includes('zoom') ? 0.05 : 1;
                 
                 // 垂直线
@@ -765,7 +767,7 @@
                     ctx.stroke();
                 }
                 
-                // 刻度和标签 - 更详细的刻度
+                // 刻度和标签
                 ctx.fillStyle = '#666';
                 const fontSize = viewType.includes('zoom') ? 11 : 12;
                 ctx.font = fontSize + 'px Inter';
@@ -774,7 +776,7 @@
                 const tickStep = viewType.includes('zoom') ? 0.1 : 1;
                 
                 for (let x = Math.ceil(config.xMin / tickStep) * tickStep; x <= Math.floor(config.xMax / tickStep) * tickStep; x += tickStep) {
-                    if (Math.abs(x) > 0.001) { // 避免在原点重叠
+                    if (Math.abs(x) > 0.001) {
                         const pixelX = this.xToPixel(x, canvas, config);
                         if (pixelX >= 0 && pixelX <= canvas.width) {
                             ctx.beginPath();
@@ -782,7 +784,6 @@
                             ctx.lineTo(pixelX, xAxisY + 4);
                             ctx.stroke();
                             
-                            // 只显示部分标签避免拥挤
                             if (viewType.includes('zoom') || x % 2 === 0) {
                                 ctx.fillText(x.toFixed(viewType.includes('zoom') ? 2 : 1), pixelX, xAxisY + 18);
                             }
@@ -850,14 +851,14 @@
                 const pixelX = this.xToPixel(this.convergencePoint, canvas, config);
                 const pixelY = this.yToPixel(this.convergencePoint, canvas, config);
                 
-                // 放大的收敛点
+                // 收敛点大小
                 const pointRadius = viewType.includes('zoom') ? 8 : 6;
                 
-                // 绘制发光效果
+                // 发光效果
                 ctx.shadowColor = '#ef4444';
                 ctx.shadowBlur = 15;
                 
-                // 绘制填充圆
+                // 填充圆
                 ctx.fillStyle = '#ef4444';
                 ctx.beginPath();
                 ctx.arc(pixelX, pixelY, pointRadius, 0, 2 * Math.PI);
@@ -865,14 +866,14 @@
                 
                 ctx.shadowBlur = 0;
                 
-                // 绘制白色边框
+                // 白色边框
                 ctx.strokeStyle = 'white';
                 ctx.lineWidth = 3;
                 ctx.beginPath();
                 ctx.arc(pixelX, pixelY, pointRadius, 0, 2 * Math.PI);
                 ctx.stroke();
                 
-                // 绘制光环
+                // 光环
                 ctx.strokeStyle = '#ef4444';
                 ctx.lineWidth = 2;
                 ctx.setLineDash([3, 3]);
@@ -881,39 +882,16 @@
                 ctx.stroke();
                 ctx.setLineDash([]);
                 
-                // 添加详细标签（带LaTeX）
+                // 标签（修正反斜杠）
                 ctx.fillStyle = '#ef4444';
                 const fontSize = viewType.includes('zoom') ? 14 : 12;
                 ctx.font = 'bold ' + fontSize + 'px Inter';
                 ctx.textAlign = 'center';
                 
-                const label = viewType.includes('zoom') ? 
-                    `收敛点: $\sqrt{${this.a}} = ${this.convergencePoint.toFixed(6)}$` : 
-                    `收敛点: $\sqrt{${this.a}} = ${this.convergencePoint.toFixed(2)}$`;
-                
-                // 创建临时元素渲染LaTeX，然后绘制到画布
-                const tempDiv = document.createElement('div');
-                tempDiv.innerHTML = label;
-                tempDiv.style.position = 'absolute';
-                tempDiv.style.visibility = 'hidden';
-                document.body.appendChild(tempDiv);
-                
-                if (window.MathJax) {
-                    MathJax.typesetPromise([tempDiv]).then(() => {
-                        // 由于Canvas无法直接渲染LaTeX，这里使用文本替代方案
-                        const displayText = viewType.includes('zoom') ? 
-                            `√${this.a} = ${this.convergencePoint.toFixed(6)}` : 
-                            `√${this.a} = ${this.convergencePoint.toFixed(2)}`;
-                        ctx.fillText(displayText, pixelX, pixelY - pointRadius - 15);
-                        document.body.removeChild(tempDiv);
-                    });
-                } else {
-                    const displayText = viewType.includes('zoom') ? 
-                        `√${this.a} = ${this.convergencePoint.toFixed(6)}` : 
-                        `√${this.a} = ${this.convergencePoint.toFixed(2)}`;
-                    ctx.fillText(displayText, pixelX, pixelY - pointRadius - 15);
-                    document.body.removeChild(tempDiv);
-                }
+                const displayText = viewType.includes('zoom') ? 
+                    `√${this.a} = ${this.convergencePoint.toFixed(6)}` : 
+                    `√${this.a} = ${this.convergencePoint.toFixed(2)}`;
+                ctx.fillText(displayText, pixelX, pixelY - pointRadius - 15);
             }
             
             drawPaths(ctx, canvas, config) {
@@ -937,7 +915,7 @@
                         dash = [3, 3];
                     }
                     
-                    // 当前正在绘制的路径高亮显示
+                    // 当前路径高亮
                     if (index === this.currentIteration - 1) {
                         lineWidth = 3;
                         ctx.shadowColor = color;
@@ -982,20 +960,20 @@
                         radius = 5;
                     }
                     
-                    // 当前点高亮显示
+                    // 当前点高亮
                     if (index === this.currentIteration) {
                         radius += 2;
                         ctx.shadowColor = color;
                         ctx.shadowBlur = 8;
                     }
                     
-                    // 绘制填充圆
+                    // 填充圆
                     ctx.fillStyle = color;
                     ctx.beginPath();
                     ctx.arc(pixelX, pixelY, radius, 0, 2 * Math.PI);
                     ctx.fill();
                     
-                    // 绘制白色边框
+                    // 白色边框
                     ctx.strokeStyle = 'white';
                     ctx.lineWidth = borderWidth;
                     ctx.beginPath();
@@ -1006,7 +984,7 @@
                         ctx.shadowBlur = 0;
                     }
                     
-                    // 添加详细标签
+                    // 标签
                     if (point.type === 'initial' || point.type === 'identity') {
                         ctx.fillStyle = color;
                         const fontSize = 11;
@@ -1032,7 +1010,7 @@
                 ctx.font = '12px Inter';
                 ctx.textAlign = 'left';
                 
-                // 函数曲线（带LaTeX公式）
+                // 函数曲线标签（修正反斜杠）
                 ctx.strokeStyle = '#2563eb';
                 ctx.lineWidth = 3;
                 ctx.beginPath();
@@ -1040,10 +1018,9 @@
                 ctx.lineTo(40, 30);
                 ctx.stroke();
                 ctx.fillStyle = '#2563eb';
-                // 使用文本替代LaTeX显示
-                ctx.fillText('y = 1/2(x + a/x)', 50, 35);
+                ctx.fillText('$y = \\frac{1}{2}\\left( x + \\frac{a}{x} \\right)$', 50, 35);
                 
-                // 恒等线
+                // 恒等线标签
                 ctx.strokeStyle = '#10b981';
                 ctx.lineWidth = 2;
                 ctx.setLineDash([5, 5]);
@@ -1053,14 +1030,14 @@
                 ctx.stroke();
                 ctx.setLineDash([]);
                 ctx.fillStyle = '#10b981';
-                ctx.fillText('y = x', 50, 55);
+                ctx.fillText('$y = x$', 50, 55);
                 
-                // 收敛点
+                // 收敛点标签（修正反斜杠）
                 ctx.fillStyle = '#ef4444';
                 ctx.beginPath();
                 ctx.arc(25, 70, 4, 0, 2 * Math.PI);
                 ctx.fill();
-                ctx.fillText(`收敛点: √${this.a}`, 50, 75);
+                ctx.fillText(`收敛点: $\\sqrt{${this.a}}$`, 50, 75);
             }
             
             updateMagnifier() {
@@ -1074,9 +1051,9 @@
                 // 放大镜配置
                 const magX = this.convergencePoint;
                 const magY = this.convergencePoint;
-                const magSize = 0.5; // 放大镜显示的范围大小
+                const magSize = 0.5; // 显示范围
                 
-                // 绘制放大的网格
+                // 网格
                 magCtx.strokeStyle = 'rgba(150, 150, 150, 0.4)';
                 magCtx.lineWidth = 1;
                 
@@ -1097,7 +1074,7 @@
                     magCtx.stroke();
                 }
                 
-                // 绘制放大的函数
+                // 函数曲线
                 magCtx.strokeStyle = '#2563eb';
                 magCtx.lineWidth = 4;
                 magCtx.beginPath();
@@ -1116,7 +1093,7 @@
                 }
                 magCtx.stroke();
                 
-                // 绘制放大的恒等线
+                // 恒等线
                 magCtx.strokeStyle = '#10b981';
                 magCtx.lineWidth = 3;
                 magCtx.setLineDash([5, 5]);
@@ -1126,7 +1103,7 @@
                 magCtx.stroke();
                 magCtx.setLineDash([]);
                 
-                // 绘制放大的收敛点
+                // 收敛点
                 const centerX = magCanvas.width / 2;
                 const centerY = magCanvas.height / 2;
                 
@@ -1144,7 +1121,7 @@
                 magCtx.arc(centerX, centerY, 12, 0, 2 * Math.PI);
                 magCtx.stroke();
                 
-                // 绘制当前迭代点的放大视图
+                // 当前迭代点
                 if (this.currentIteration > 0 && this.points.length > 0) {
                     const currentPoint = this.points[this.currentIteration];
                     if (Math.abs(currentPoint.x - magX) <= magSize && Math.abs(currentPoint.y - magY) <= magSize) {
@@ -1271,7 +1248,7 @@
             }
         }
         
-        // 初始化增强版可视化器
+        // 初始化可视化器
         document.addEventListener('DOMContentLoaded', () => {
             new EnhancedConvergenceVisualizer();
         });
