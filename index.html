@@ -173,7 +173,7 @@
                     <h2 class="text-xl font-semibold text-gray-900 mb-2">牛顿迭代法求平方根</h2>
                     <p class="text-gray-600 mb-4">
                         数列递推公式：$$X_{n+1} = \frac{1}{2} \left( X_n + \frac{a}{X_n} \right)$$
-                        其中 $$a > 0$$ 为自定义参数，数列收敛于 $$\sqrt{a}$$。增强版提供更大的收敛点显示和局部放大功能，让收敛细节更加清晰可见。
+                        其中 $a > 0$ 为自定义参数，数列收敛于 $\sqrt{a}$。增强版提供更大的收敛点显示和局部放大功能，让收敛细节更加清晰可见。
                     </p>
                     <div class="flex flex-wrap gap-2">
                         <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">自定义参数</span>
@@ -313,7 +313,7 @@
                             </div>
                             <div class="flex items-center space-x-2">
                                 <div class="w-4 h-4 bg-danger rounded-full"></div>
-                                <span>收敛点 $$\sqrt{a}$$</span>
+                                <span>收敛点 $\sqrt{a}$</span>
                             </div>
                         </div>
                     </div>
@@ -334,7 +334,7 @@
                     <div class="flex justify-between items-center mb-4">
                         <h3 class="text-lg font-semibold text-gray-900 flex items-center">
                             <i class="fa fa-search-plus text-primary mr-2"></i>
-                            收敛点放大视图（$$\sqrt{a}$$ 附近）
+                            收敛点放大视图（$\sqrt{a}$ 附近）
                         </h3>
                         <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
                             <i class="fa fa-search mr-1"></i>
@@ -360,7 +360,7 @@
                     <div class="bg-white/70 backdrop-blur-sm rounded-2xl shadow-lg p-6 border border-gray-200/50">
                         <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
                             <i class="fa fa-search-plus text-primary mr-2"></i>
-                            放大视图（$$\sqrt{a}$$ 附近）
+                            放大视图（$\sqrt{a}$ 附近）
                         </h3>
                         <canvas id="dualZoomCanvas" width="400" height="400" 
                                 class="w-full h-auto border border-gray-200/50 rounded-lg bg-white/50 shadow-inner"></canvas>
@@ -379,25 +379,25 @@
                 <div>
                     <h4 class="font-semibold text-gray-900 mb-2">二次收敛性</h4>
                     <p class="text-gray-600 text-sm">
-                        牛顿迭代法求解 $$f(x) = x^2 - a = 0$$ 时，迭代公式为：
+                        牛顿迭代法求解 $f(x) = x^2 - a = 0$ 时，迭代公式为：
                         $$X_{n+1} = X_n - \frac{f(X_n)}{f'(X_n)} = \frac{1}{2} \left( X_n + \frac{a}{X_n} \right)$$
-                        具有二次收敛性，即误差满足 $$|X_{n+1} - \sqrt{a}| \leq C |X_n - \sqrt{a}|^2$$（$$C$$ 为常数），收敛速度极快。
+                        具有二次收敛性，即误差满足 $|X_{n+1} - \sqrt{a}| \leq C |X_n - \sqrt{a}|^2$（$C$ 为常数），收敛速度极快。
                     </p>
                 </div>
                 <div>
                     <h4 class="font-semibold text-gray-900 mb-2">收敛条件</h4>
                     <p class="text-gray-600 text-sm">
-                        对任意初始值 $$X_0 > 0$$，数列 $$\{X_n\}$$ 严格递减且收敛于 $\sqrt{a}$。
+                        对任意初始值 $X_0 > 0$，数列 $\{X_n\}$ 严格递减且收敛于 $\sqrt{a}$。
                         收敛速度与初始值无关，最终都会快速逼近收敛点。
-                        迭代过程满足：$$X_n \geq \sqrt{a}$$（$$n \geq 1$$），即从第二次迭代开始恒大于等于收敛值。
+                        迭代过程满足：$X_n \geq \sqrt{a}$（$n \geq 1$），即从第二次迭代开始恒大于等于收敛值。
                     </p>
                 </div>
                 <div>
                     <h4 class="font-semibold text-gray-900 mb-2">精度分析</h4>
                     <p class="text-gray-600 text-sm">
                         二次收敛意味着每次迭代的有效数字位数翻倍：
-                        - 若 $$X_n$$ 有 $$k$$ 位有效数字，则 $$X_{n+1}$$ 约有 $$2k$$ 位有效数字
-                        - 通常 5-6 次迭代即可达到机器精度（约 $$10^{-16}$$）
+                        - 若 $X_n$ 有 $k$ 位有效数字，则 $X_{n+1}$ 约有 $2k$ 位有效数字
+                        - 通常 5-6 次迭代即可达到机器精度（约 $10^{-16}$）
                         - 从迭代表可观察到误差按平方级衰减
                     </p>
                 </div>
