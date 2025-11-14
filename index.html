@@ -1,0 +1,1196 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数列收敛可视化 - 牛顿迭代法（增强版）</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#2563eb',
+                        secondary: '#10b981',
+                        accent: '#f59e0b',
+                        danger: '#ef4444',
+                        neutral: '#6b7280',
+                    },
+                    fontFamily: {
+                        inter: ['Inter', 'sans-serif'],
+                    },
+                },
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .glass-effect {
+                backdrop-filter: blur(10px);
+                background: rgba(255, 255, 255, 0.1);
+                border: 1px solid rgba(255, 255, 255, 0.2);
+            }
+            .shadow-glow {
+                box-shadow: 0 0 20px rgba(37, 99, 235, 0.3);
+            }
+            .magnifying-glass {
+                position: relative;
+                border: 3px solid #2563eb;
+                border-radius: 50%;
+                background: rgba(255, 255, 255, 0.9);
+                box-shadow: 0 0 20px rgba(37, 99, 235, 0.3);
+            }
+            .magnifying-glass::before {
+                content: '';
+                position: absolute;
+                bottom: -8px;
+                right: -8px;
+                width: 15px;
+                height: 15px;
+                border: 3px solid #2563eb;
+                border-radius: 0 0 15px 0;
+            }
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+        
+        .animation-path {
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+            animation: dash 2s linear forwards;
+        }
+        
+        @keyframes dash {
+            to {
+                stroke-dashoffset: 0;
+            }
+        }
+        
+        .pulse-dot {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.7;
+                transform: scale(1.1);
+            }
+        }
+        
+        .floating {
+            animation: floating 3s ease-in-out infinite;
+        }
+        
+        @keyframes floating {
+            0%, 100% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+        
+        .zoom-animation {
+            animation: zoomIn 0.5s ease-out;
+        }
+        
+        @keyframes zoomIn {
+            from {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+        
+        .iteration-card {
+            transition: all 0.3s ease;
+        }
+        
+        .iteration-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 via-white to-green-50 min-h-screen">
+    <!-- 顶部导航 -->
+    <nav class="bg-white/80 backdrop-blur-md border-b border-gray-200/50 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-gradient-to-r from-primary to-secondary rounded-lg flex items-center justify-center">
+                        <i class="fa fa-search text-white text-lg"></i>
+                    </div>
+                    <h1 class="text-xl font-bold text-gray-900">数列收敛可视化（增强版）</h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <span class="text-sm text-gray-600">a = 4</span>
+                    <span class="text-sm text-gray-600 bg-red-100 text-red-800 px-2 py-1 rounded-full">收敛点: 2</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主要内容区域 -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- 说明卡片 -->
+        <div class="bg-white/70 backdrop-blur-sm rounded-2xl shadow-lg p-6 mb-8 border border-gray-200/50">
+            <div class="flex items-start space-x-4">
+                <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <i class="fa fa-info-circle text-primary text-xl"></i>
+                </div>
+                <div>
+                    <h2 class="text-xl font-semibold text-gray-900 mb-2">牛顿迭代法求平方根</h2>
+                    <p class="text-gray-600 mb-4">
+                        数列公式：X<sub>n+1</sub> = 1/2(X<sub>n</sub> + a/X<sub>n</sub>)，其中a = 4。
+                        增强版提供了更大的收敛点显示和局部放大功能，让收敛细节更加清晰可见。
+                    </p>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">放大显示</span>
+                        <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">细节增强</span>
+                        <span class="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm">双视图</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 视图切换 -->
+        <div class="bg-white/70 backdrop-blur-sm rounded-2xl shadow-lg p-4 mb-6 border border-gray-200/50">
+            <div class="flex items-center justify-center space-x-4">
+                <button id="fullViewBtn" class="bg-primary text-white px-4 py-2 rounded-lg font-medium transition-all duration-200 transform hover:scale-105">
+                    <i class="fa fa-expand mr-2"></i>完整视图
+                </button>
+                <button id="zoomViewBtn" class="bg-gray-600 text-white px-4 py-2 rounded-lg font-medium transition-all duration-200 transform hover:scale-105">
+                    <i class="fa fa-search-plus mr-2"></i>放大视图
+                </button>
+                <button id="dualViewBtn" class="bg-gray-600 text-white px-4 py-2 rounded-lg font-medium transition-all duration-200 transform hover:scale-105">
+                    <i class="fa fa-columns mr-2"></i>双视图对比
+                </button>
+                <span class="text-sm text-gray-600 ml-4">
+                    <i class="fa fa-eye text-primary mr-1"></i>
+                    点击切换视图模式
+                </span>
+            </div>
+        </div>
+
+        <!-- 可视化区域 -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- 左侧控制面板 -->
+            <div class="lg:col-span-1 space-y-6">
+                <!-- 初始值设置 -->
+                <div class="bg-white/70 backdrop-blur-sm rounded-2xl shadow-lg p-6 border border-gray-200/50">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                        <i class="fa fa-sliders text-primary mr-2"></i>
+                        初始值设置
+                    </h3>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">初始值 x₀</label>
+                            <div class="flex items-center space-x-3">
+                                <input type="range" id="initialValue" min="0.1" max="10" step="0.1" value="1" 
+                                       class="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                                <span id="initialValueDisplay" class="w-16 text-center font-mono text-primary font-semibold">1.0</span>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">迭代次数</label>
+                            <div class="flex items-center space-x-3">
+                                <input type="range" id="iterations" min="1" max="20" step="1" value="12" 
+                                       class="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                                <span id="iterationsDisplay" class="w-16 text-center font-mono text-primary font-semibold">12</span>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">动画速度</label>
+                            <div class="flex items-center space-x-3">
+                                <input type="range" id="animationSpeed" min="0.3" max="2.5" step="0.1" value="1.0" 
+                                       class="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                                <span id="animationSpeedDisplay" class="w-16 text-center font-mono text-primary font-semibold">1.0s</span>
+                            </div>
+                        </div>
+                        <div class="pt-2">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">放大倍数</label>
+                            <div class="flex items-center space-x-3">
+                                <input type="range" id="zoomLevel" min="2" max="10" step="0.5" value="4" 
+                                       class="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                                <span id="zoomLevelDisplay" class="w-16 text-center font-mono text-primary font-semibold">4x</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 控制按钮 -->
+                <div class="bg-white/70 backdrop-blur-sm rounded-2xl shadow-lg p-6 border border-gray-200/50">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                        <i class="fa fa-play text-primary mr-2"></i>
+                        动画控制
+                    </h3>
+                    <div class="grid grid-cols-2 gap-3">
+                        <button id="startBtn" class="bg-primary hover:bg-primary/90 text-white px-4 py-3 rounded-lg font-medium transition-all duration-200 transform hover:scale-105 shadow-md">
+                            <i class="fa fa-play mr-2"></i>开始动画
+                        </button>
+                        <button id="resetBtn" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-3 rounded-lg font-medium transition-all duration-200 transform hover:scale-105 shadow-md">
+                            <i class="fa fa-bullseye mr-2"></i>重置
+                        </button>
+                        <button id="stepBtn" class="bg-secondary hover:bg-secondary/90 text-white px-4 py-3 rounded-lg font-medium transition-all duration-200 transform hover:scale-105 shadow-md">
+                            <i class="fa fa-step-forward mr-2"></i>单步执行
+                        </button>
+                        <button id="pauseBtn" class="bg-accent hover:bg-accent/90 text-white px-4 py-3 rounded-lg font-medium transition-all duration-200 transform hover:scale-105 shadow-md">
+                            <i class="fa fa-pause mr-2"></i>暂停
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 迭代结果 -->
+                <div class="bg-white/70 backdrop-blur-sm rounded-2xl shadow-lg p-6 border border-gray-200/50">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                        <i class="fa fa-table text-primary mr-2"></i>
+                        迭代结果分析
+                    </h3>
+                    <div class="space-y-3 max-h-64 overflow-y-auto pr-2" id="iterationResults">
+                        <!-- 结果将在这里动态生成 -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右侧画布区域 -->
+            <div class="lg:col-span-2 space-y-6">
+                <!-- 主视图 -->
+                <div class="bg-white/70 backdrop-blur-sm rounded-2xl shadow-lg p-6 border border-gray-200/50" id="mainView">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-semibold text-gray-900 flex items-center">
+                            <i class="fa fa-area-chart text-primary mr-2"></i>
+                            <span id="viewTitle">完整收敛过程</span>
+                        </h3>
+                        <div class="flex items-center space-x-4 text-sm text-gray-600">
+                            <div class="flex items-center space-x-2">
+                                <div class="w-4 h-4 bg-primary rounded-full"></div>
+                                <span>y = 1/2(x + 4/x)</span>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <div class="w-4 h-4 bg-secondary rounded-full"></div>
+                                <span>y = x</span>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <div class="w-4 h-4 bg-danger rounded-full"></div>
+                                <span>收敛点</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="relative">
+                        <canvas id="mainCanvas" width="800" height="500" 
+                                class="w-full h-auto border border-gray-200/50 rounded-lg bg-white/50 shadow-inner"></canvas>
+                        
+                        <!-- 放大镜效果（只在完整视图显示） -->
+                        <div id="magnifier" class="magnifying-glass absolute w-64 h-64 rounded-full pointer-events-none hidden" 
+                             style="top: 50px; right: 50px;">
+                            <canvas id="magnifierCanvas" width="256" height="256" class="w-full h-full rounded-full"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 放大视图（默认隐藏） -->
+                <div class="bg-white/70 backdrop-blur-sm rounded-2xl shadow-lg p-6 border border-gray-200/50 hidden" id="zoomView">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-semibold text-gray-900 flex items-center">
+                            <i class="fa fa-search-plus text-primary mr-2"></i>
+                            收敛点放大视图
+                        </h3>
+                        <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
+                            <i class="fa fa-search mr-1"></i>
+                            聚焦于收敛点附近
+                        </span>
+                    </div>
+                    <div class="relative">
+                        <canvas id="zoomCanvas" width="800" height="500" 
+                                class="w-full h-auto border border-gray-200/50 rounded-lg bg-white/50 shadow-inner"></canvas>
+                    </div>
+                </div>
+
+                <!-- 双视图（默认隐藏） -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 hidden" id="dualView">
+                    <div class="bg-white/70 backdrop-blur-sm rounded-2xl shadow-lg p-6 border border-gray-200/50">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                            <i class="fa fa-expand text-primary mr-2"></i>
+                            完整视图
+                        </h3>
+                        <canvas id="dualFullCanvas" width="400" height="400" 
+                                class="w-full h-auto border border-gray-200/50 rounded-lg bg-white/50 shadow-inner"></canvas>
+                    </div>
+                    <div class="bg-white/70 backdrop-blur-sm rounded-2xl shadow-lg p-6 border border-gray-200/50">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                            <i class="fa fa-search-plus text-primary mr-2"></i>
+                            放大视图
+                        </h3>
+                        <canvas id="dualZoomCanvas" width="400" height="400" 
+                                class="w-full h-auto border border-gray-200/50 rounded-lg bg-white/50 shadow-inner"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 数学原理说明 -->
+        <div class="mt-8 bg-white/70 backdrop-blur-sm rounded-2xl shadow-lg p-6 border border-gray-200/50">
+            <h3 class="text-xl font-semibold text-gray-900 mb-4 flex items-center">
+                <i class="fa fa-calculator text-primary mr-2"></i>
+                收敛特性分析
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div>
+                    <h4 class="font-semibold text-gray-900 mb-2">二次收敛性</h4>
+                    <p class="text-gray-600 text-sm">
+                        牛顿迭代法具有二次收敛性，每次迭代的误差大约是前一次的平方。
+                        这意味着收敛速度非常快，通常只需要几次迭代就能达到机器精度。
+                    </p>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-gray-900 mb-2">收敛条件</h4>
+                    <p class="text-gray-600 text-sm">
+                        对于初始值x₀ > 0，数列总是收敛到√a。
+                        收敛速度取决于初始值与真实值的距离，但无论初始值如何选择，
+                        最终都会快速逼近收敛点。
+                    </p>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-gray-900 mb-2">精度分析</h4>
+                    <p class="text-gray-600 text-sm">
+                        从表格中可以看到，经过5-6次迭代后，数值已经非常接近2，
+                        再迭代几次就能达到小数点后10位以上的精度。
+                    </p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="mt-16 bg-white/80 backdrop-blur-md border-t border-gray-200/50 py-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <p class="text-gray-600">
+                <i class="fa fa-search text-primary mr-2"></i>
+                增强版数列收敛可视化 | 放大显示收敛细节
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        class EnhancedConvergenceVisualizer {
+            constructor() {
+                // 初始化画布
+                this.mainCanvas = document.getElementById('mainCanvas');
+                this.mainCtx = this.mainCanvas.getContext('2d');
+                this.zoomCanvas = document.getElementById('zoomCanvas');
+                this.zoomCtx = this.zoomCanvas.getContext('2d');
+                this.magnifierCanvas = document.getElementById('magnifierCanvas');
+                this.magnifierCtx = this.magnifierCanvas.getContext('2d');
+                this.dualFullCanvas = document.getElementById('dualFullCanvas');
+                this.dualFullCtx = this.dualFullCanvas.getContext('2d');
+                this.dualZoomCanvas = document.getElementById('dualZoomCanvas');
+                this.dualZoomCtx = this.dualZoomCanvas.getContext('2d');
+                
+                this.a = 4;
+                this.convergencePoint = 2;
+                
+                // 状态变量
+                this.initialValue = 1;
+                this.iterations = 12;
+                this.animationSpeed = 1.0;
+                this.zoomLevel = 4;
+                this.currentIteration = 0;
+                this.isAnimating = false;
+                this.currentView = 'full'; // full, zoom, dual
+                
+                // 数据存储
+                this.points = [];
+                this.paths = [];
+                this.iterationData = [];
+                
+                // 视图配置
+                this.viewConfigs = {
+                    full: { xMin: 0, xMax: 10, yMin: 0, yMax: 10 },
+                    zoom: { xMin: 1.5, xMax: 2.5, yMin: 1.5, yMax: 2.5 },
+                    dualFull: { xMin: 0, xMax: 10, yMin: 0, yMax: 10 },
+                    dualZoom: { xMin: 1.8, xMax: 2.2, yMin: 1.8, yMax: 2.2 }
+                };
+                
+                this.init();
+            }
+            
+            init() {
+                this.setupEventListeners();
+                this.updateDisplayValues();
+                this.calculatePoints();
+                this.drawAllViews();
+                this.updateIterationResults();
+            }
+            
+            setupEventListeners() {
+                // 滑块事件
+                document.getElementById('initialValue').addEventListener('input', (e) => {
+                    this.initialValue = parseFloat(e.target.value);
+                    this.updateDisplayValues();
+                    this.reset();
+                });
+                
+                document.getElementById('iterations').addEventListener('input', (e) => {
+                    this.iterations = parseInt(e.target.value);
+                    this.updateDisplayValues();
+                    this.reset();
+                });
+                
+                document.getElementById('animationSpeed').addEventListener('input', (e) => {
+                    this.animationSpeed = parseFloat(e.target.value);
+                    this.updateDisplayValues();
+                });
+                
+                document.getElementById('zoomLevel').addEventListener('input', (e) => {
+                    this.zoomLevel = parseFloat(e.target.value);
+                    this.updateDisplayValues();
+                    this.updateZoomView();
+                });
+                
+                // 按钮事件
+                document.getElementById('startBtn').addEventListener('click', () => this.startAnimation());
+                document.getElementById('resetBtn').addEventListener('click', () => this.reset());
+                document.getElementById('stepBtn').addEventListener('click', () => this.stepThrough());
+                document.getElementById('pauseBtn').addEventListener('click', () => this.pauseAnimation());
+                
+                // 视图切换
+                document.getElementById('fullViewBtn').addEventListener('click', () => this.switchView('full'));
+                document.getElementById('zoomViewBtn').addEventListener('click', () => this.switchView('zoom'));
+                document.getElementById('dualViewBtn').addEventListener('click', () => this.switchView('dual'));
+                
+                // 画布点击事件
+                this.mainCanvas.addEventListener('click', (e) => this.handleCanvasClick(e, 'main'));
+                this.zoomCanvas.addEventListener('click', (e) => this.handleCanvasClick(e, 'zoom'));
+                
+                // 窗口大小调整
+                window.addEventListener('resize', () => this.drawAllViews());
+            }
+            
+            updateDisplayValues() {
+                document.getElementById('initialValueDisplay').textContent = this.initialValue.toFixed(1);
+                document.getElementById('iterationsDisplay').textContent = this.iterations;
+                document.getElementById('animationSpeedDisplay').textContent = this.animationSpeed.toFixed(1) + 's';
+                document.getElementById('zoomLevelDisplay').textContent = this.zoomLevel.toFixed(1) + 'x';
+            }
+            
+            handleCanvasClick(e, canvasType) {
+                const canvas = canvasType === 'main' ? this.mainCanvas : this.zoomCanvas;
+                const rect = canvas.getBoundingClientRect();
+                const clickX = e.clientX - rect.left;
+                const clickY = e.clientY - rect.top;
+                
+                // 根据当前视图类型转换坐标
+                let mathX, mathY;
+                if (canvasType === 'main' && this.currentView === 'full') {
+                    mathX = this.viewConfigs.full.xMin + (clickX / canvas.width) * (this.viewConfigs.full.xMax - this.viewConfigs.full.xMin);
+                    mathY = this.viewConfigs.full.yMax - (clickY / canvas.height) * (this.viewConfigs.full.yMax - this.viewConfigs.full.yMin);
+                } else {
+                    mathX = this.viewConfigs.zoom.xMin + (clickX / canvas.width) * (this.viewConfigs.zoom.xMax - this.viewConfigs.zoom.xMin);
+                    mathY = this.viewConfigs.zoom.yMax - (clickY / canvas.height) * (this.viewConfigs.zoom.yMax - this.viewConfigs.zoom.yMin);
+                }
+                
+                // 确保x在合理范围内
+                if (mathX > 0.1 && mathX < 10) {
+                    this.initialValue = mathX;
+                    document.getElementById('initialValue').value = mathX;
+                    this.updateDisplayValues();
+                    this.reset();
+                }
+            }
+            
+            function(x) {
+                return 0.5 * (x + this.a / x);
+            }
+            
+            calculatePoints() {
+                this.points = [];
+                this.paths = [];
+                this.iterationData = [];
+                
+                let currentX = this.initialValue;
+                this.points.push({x: currentX, y: 0, type: 'initial', iteration: 0});
+                this.iterationData.push({
+                    iteration: 0,
+                    value: currentX,
+                    error: Math.abs(currentX - this.convergencePoint),
+                    errorRate: 0
+                });
+                
+                for (let i = 0; i < this.iterations; i++) {
+                    const nextY = this.function(currentX);
+                    this.points.push({x: currentX, y: nextY, type: 'function', iteration: i + 1});
+                    
+                    this.paths.push({
+                        from: {x: currentX, y: 0},
+                        to: {x: currentX, y: nextY},
+                        type: 'vertical',
+                        iteration: i + 1
+                    });
+                    
+                    this.points.push({x: nextY, y: nextY, type: 'identity', iteration: i + 1});
+                    
+                    this.paths.push({
+                        from: {x: currentX, y: nextY},
+                        to: {x: nextY, y: nextY},
+                        type: 'horizontal',
+                        iteration: i + 1
+                    });
+                    
+                    const error = Math.abs(nextY - this.convergencePoint);
+                    const errorRate = i > 0 ? error / this.iterationData[i].error : 0;
+                    
+                    this.iterationData.push({
+                        iteration: i + 1,
+                        value: nextY,
+                        error: error,
+                        errorRate: errorRate
+                    });
+                    
+                    currentX = nextY;
+                }
+            }
+            
+            switchView(viewType) {
+                this.currentView = viewType;
+                
+                // 更新按钮状态
+                document.querySelectorAll('#fullViewBtn, #zoomViewBtn, #dualViewBtn').forEach(btn => {
+                    btn.className = btn.className.replace('bg-primary', 'bg-gray-600');
+                });
+                
+                document.getElementById(viewType + 'ViewBtn').className = 
+                    document.getElementById(viewType + 'ViewBtn').className.replace('bg-gray-600', 'bg-primary');
+                
+                // 显示/隐藏视图
+                document.getElementById('mainView').classList.add('hidden');
+                document.getElementById('zoomView').classList.add('hidden');
+                document.getElementById('dualView').classList.add('hidden');
+                
+                if (viewType === 'full') {
+                    document.getElementById('mainView').classList.remove('hidden');
+                    document.getElementById('viewTitle').textContent = '完整收敛过程';
+                    document.getElementById('magnifier').classList.remove('hidden');
+                } else if (viewType === 'zoom') {
+                    document.getElementById('zoomView').classList.remove('hidden');
+                    document.getElementById('magnifier').classList.add('hidden');
+                } else if (viewType === 'dual') {
+                    document.getElementById('dualView').classList.remove('hidden');
+                    document.getElementById('magnifier').classList.add('hidden');
+                }
+                
+                this.drawAllViews();
+            }
+            
+            drawAllViews() {
+                if (this.currentView === 'full' || this.currentView === 'dual') {
+                    this.drawCanvas(this.mainCtx, this.mainCanvas, 'full');
+                    this.updateMagnifier();
+                }
+                if (this.currentView === 'zoom' || this.currentView === 'dual') {
+                    this.drawCanvas(this.zoomCtx, this.zoomCanvas, 'zoom');
+                }
+                if (this.currentView === 'dual') {
+                    this.drawCanvas(this.dualFullCtx, this.dualFullCanvas, 'dualFull');
+                    this.drawCanvas(this.dualZoomCtx, this.dualZoomCanvas, 'dualZoom');
+                }
+            }
+            
+            updateZoomView() {
+                // 根据放大倍数调整zoom视图范围
+                const range = (2.5 - 1.5) / this.zoomLevel;
+                this.viewConfigs.zoom = {
+                    xMin: this.convergencePoint - range,
+                    xMax: this.convergencePoint + range,
+                    yMin: this.convergencePoint - range,
+                    yMax: this.convergencePoint + range
+                };
+                
+                this.viewConfigs.dualZoom = {
+                    xMin: this.convergencePoint - range * 0.8,
+                    xMax: this.convergencePoint + range * 0.8,
+                    yMin: this.convergencePoint - range * 0.8,
+                    yMax: this.convergencePoint + range * 0.8
+                };
+                
+                this.drawAllViews();
+            }
+            
+            drawCanvas(ctx, canvas, viewType) {
+                const config = this.viewConfigs[viewType];
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // 绘制网格（更密集的网格）
+                this.drawGrid(ctx, canvas, config, viewType);
+                
+                // 绘制坐标轴
+                this.drawAxes(ctx, canvas, config, viewType);
+                
+                // 绘制函数 y = 1/2(x + 4/x)
+                this.drawFunction(ctx, canvas, config);
+                
+                // 绘制直线 y = x
+                this.drawIdentityLine(ctx, canvas, config);
+                
+                // 绘制收敛点（放大显示）
+                this.drawConvergencePoint(ctx, canvas, config, viewType);
+                
+                // 绘制路径和点
+                this.drawPaths(ctx, canvas, config);
+                this.drawPoints(ctx, canvas, config);
+                
+                // 绘制图例
+                this.drawLegend(ctx, canvas, viewType);
+            }
+            
+            drawGrid(ctx, canvas, config, viewType) {
+                const gridColor = viewType.includes('zoom') ? 'rgba(150, 150, 150, 0.4)' : 'rgba(200, 200, 200, 0.3)';
+                ctx.strokeStyle = gridColor;
+                ctx.lineWidth = 1;
+                
+                // 更密集的网格
+                const gridStep = viewType.includes('zoom') ? 0.05 : 1;
+                
+                // 垂直线
+                for (let x = Math.ceil(config.xMin / gridStep) * gridStep; x <= Math.floor(config.xMax / gridStep) * gridStep; x += gridStep) {
+                    const pixelX = this.xToPixel(x, canvas, config);
+                    ctx.beginPath();
+                    ctx.moveTo(pixelX, 0);
+                    ctx.lineTo(pixelX, canvas.height);
+                    ctx.stroke();
+                }
+                
+                // 水平线
+                for (let y = Math.ceil(config.yMin / gridStep) * gridStep; y <= Math.floor(config.yMax / gridStep) * gridStep; y += gridStep) {
+                    const pixelY = this.yToPixel(y, canvas, config);
+                    ctx.beginPath();
+                    ctx.moveTo(0, pixelY);
+                    ctx.lineTo(canvas.width, pixelY);
+                    ctx.stroke();
+                }
+            }
+            
+            drawAxes(ctx, canvas, config, viewType) {
+                // 坐标轴颜色
+                ctx.strokeStyle = '#333';
+                ctx.lineWidth = 2;
+                
+                // x轴
+                const xAxisY = this.yToPixel(0, canvas, config);
+                if (xAxisY >= 0 && xAxisY <= canvas.height) {
+                    ctx.beginPath();
+                    ctx.moveTo(0, xAxisY);
+                    ctx.lineTo(canvas.width, xAxisY);
+                    ctx.stroke();
+                }
+                
+                // y轴
+                const yAxisX = this.xToPixel(0, canvas, config);
+                if (yAxisX >= 0 && yAxisX <= canvas.width) {
+                    ctx.beginPath();
+                    ctx.moveTo(yAxisX, 0);
+                    ctx.lineTo(yAxisX, canvas.height);
+                    ctx.stroke();
+                }
+                
+                // 刻度和标签 - 更详细的刻度
+                ctx.fillStyle = '#666';
+                const fontSize = viewType.includes('zoom') ? 11 : 12;
+                ctx.font = fontSize + 'px Inter';
+                ctx.textAlign = 'center';
+                
+                const tickStep = viewType.includes('zoom') ? 0.1 : 1;
+                
+                for (let x = Math.ceil(config.xMin / tickStep) * tickStep; x <= Math.floor(config.xMax / tickStep) * tickStep; x += tickStep) {
+                    if (Math.abs(x) > 0.001) { // 避免在原点重叠
+                        const pixelX = this.xToPixel(x, canvas, config);
+                        if (pixelX >= 0 && pixelX <= canvas.width) {
+                            ctx.beginPath();
+                            ctx.moveTo(pixelX, xAxisY - 4);
+                            ctx.lineTo(pixelX, xAxisY + 4);
+                            ctx.stroke();
+                            
+                            // 只显示部分标签避免拥挤
+                            if (viewType.includes('zoom') || x % 2 === 0) {
+                                ctx.fillText(x.toFixed(viewType.includes('zoom') ? 2 : 1), pixelX, xAxisY + 18);
+                            }
+                        }
+                    }
+                }
+                
+                ctx.textAlign = 'right';
+                for (let y = Math.ceil(config.yMin / tickStep) * tickStep; y <= Math.floor(config.yMax / tickStep) * tickStep; y += tickStep) {
+                    if (Math.abs(y) > 0.001) {
+                        const pixelY = this.yToPixel(y, canvas, config);
+                        if (pixelY >= 0 && pixelY <= canvas.height) {
+                            ctx.beginPath();
+                            ctx.moveTo(yAxisX - 4, pixelY);
+                            ctx.lineTo(yAxisX + 4, pixelY);
+                            ctx.stroke();
+                            
+                            if (viewType.includes('zoom') || y % 2 === 0) {
+                                ctx.fillText(y.toFixed(viewType.includes('zoom') ? 2 : 1), yAxisX - 8, pixelY + 3);
+                            }
+                        }
+                    }
+                }
+            }
+            
+            drawFunction(ctx, canvas, config) {
+                ctx.strokeStyle = '#2563eb';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                
+                const step = config.xMax - config.xMin > 5 ? 0.01 : 0.001;
+                
+                for (let x = config.xMin + 0.01; x <= config.xMax; x += step) {
+                    const y = this.function(x);
+                    if (y >= config.yMin && y <= config.yMax) {
+                        const pixelX = this.xToPixel(x, canvas, config);
+                        const pixelY = this.yToPixel(y, canvas, config);
+                        if (x === config.xMin + 0.01) {
+                            ctx.moveTo(pixelX, pixelY);
+                        } else {
+                            ctx.lineTo(pixelX, pixelY);
+                        }
+                    }
+                }
+                
+                ctx.stroke();
+            }
+            
+            drawIdentityLine(ctx, canvas, config) {
+                ctx.strokeStyle = '#10b981';
+                ctx.lineWidth = 2;
+                ctx.setLineDash([5, 5]);
+                ctx.beginPath();
+                
+                const startX = Math.max(config.xMin, config.yMin);
+                const endX = Math.min(config.xMax, config.yMax);
+                
+                ctx.moveTo(this.xToPixel(startX, canvas, config), this.yToPixel(startX, canvas, config));
+                ctx.lineTo(this.xToPixel(endX, canvas, config), this.yToPixel(endX, canvas, config));
+                ctx.stroke();
+                ctx.setLineDash([]);
+            }
+            
+            drawConvergencePoint(ctx, canvas, config, viewType) {
+                const pixelX = this.xToPixel(this.convergencePoint, canvas, config);
+                const pixelY = this.yToPixel(this.convergencePoint, canvas, config);
+                
+                // 放大的收敛点
+                const pointRadius = viewType.includes('zoom') ? 8 : 6;
+                
+                // 绘制发光效果
+                ctx.shadowColor = '#ef4444';
+                ctx.shadowBlur = 15;
+                
+                // 绘制填充圆
+                ctx.fillStyle = '#ef4444';
+                ctx.beginPath();
+                ctx.arc(pixelX, pixelY, pointRadius, 0, 2 * Math.PI);
+                ctx.fill();
+                
+                ctx.shadowBlur = 0;
+                
+                // 绘制白色边框
+                ctx.strokeStyle = 'white';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.arc(pixelX, pixelY, pointRadius, 0, 2 * Math.PI);
+                ctx.stroke();
+                
+                // 绘制光环
+                ctx.strokeStyle = '#ef4444';
+                ctx.lineWidth = 2;
+                ctx.setLineDash([3, 3]);
+                ctx.beginPath();
+                ctx.arc(pixelX, pixelY, pointRadius + 6, 0, 2 * Math.PI);
+                ctx.stroke();
+                ctx.setLineDash([]);
+                
+                // 添加详细标签
+                ctx.fillStyle = '#ef4444';
+                const fontSize = viewType.includes('zoom') ? 14 : 12;
+                ctx.font = 'bold ' + fontSize + 'px Inter';
+                ctx.textAlign = 'center';
+                
+                const label = viewType.includes('zoom') ? 
+                    `收敛点: ${this.convergencePoint.toFixed(6)}` : 
+                    `收敛点: ${this.convergencePoint}`;
+                
+                ctx.fillText(label, pixelX, pixelY - pointRadius - 15);
+            }
+            
+            drawPaths(ctx, canvas, config) {
+                if (this.currentIteration === 0) return;
+                
+                this.paths.slice(0, this.currentIteration).forEach((path, index) => {
+                    const fromPixelX = this.xToPixel(path.from.x, canvas, config);
+                    const fromPixelY = this.yToPixel(path.from.y, canvas, config);
+                    const toPixelX = this.xToPixel(path.to.x, canvas, config);
+                    const toPixelY = this.yToPixel(path.to.y, canvas, config);
+                    
+                    let color = '#666';
+                    let dash = [];
+                    let lineWidth = 2;
+                    
+                    if (path.type === 'vertical') {
+                        color = '#2563eb';
+                        dash = [3, 3];
+                    } else if (path.type === 'horizontal') {
+                        color = '#10b981';
+                        dash = [3, 3];
+                    }
+                    
+                    // 当前正在绘制的路径高亮显示
+                    if (index === this.currentIteration - 1) {
+                        lineWidth = 3;
+                        ctx.shadowColor = color;
+                        ctx.shadowBlur = 5;
+                    }
+                    
+                    ctx.strokeStyle = color;
+                    ctx.lineWidth = lineWidth;
+                    ctx.setLineDash(dash);
+                    ctx.beginPath();
+                    ctx.moveTo(fromPixelX, fromPixelY);
+                    ctx.lineTo(toPixelX, toPixelY);
+                    ctx.stroke();
+                    ctx.setLineDash([]);
+                    
+                    if (index === this.currentIteration - 1) {
+                        ctx.shadowBlur = 0;
+                    }
+                });
+            }
+            
+            drawPoints(ctx, canvas, config) {
+                if (this.points.length === 0) return;
+                
+                this.points.slice(0, this.currentIteration + 1).forEach((point, index) => {
+                    const pixelX = this.xToPixel(point.x, canvas, config);
+                    const pixelY = this.yToPixel(point.y, canvas, config);
+                    
+                    let color = '#333';
+                    let radius = 4;
+                    let borderWidth = 2;
+                    
+                    if (point.type === 'initial') {
+                        color = '#f59e0b';
+                        radius = 6;
+                        borderWidth = 3;
+                    } else if (point.type === 'function') {
+                        color = '#2563eb';
+                        radius = 5;
+                    } else if (point.type === 'identity') {
+                        color = '#10b981';
+                        radius = 5;
+                    }
+                    
+                    // 当前点高亮显示
+                    if (index === this.currentIteration) {
+                        radius += 2;
+                        ctx.shadowColor = color;
+                        ctx.shadowBlur = 8;
+                    }
+                    
+                    // 绘制填充圆
+                    ctx.fillStyle = color;
+                    ctx.beginPath();
+                    ctx.arc(pixelX, pixelY, radius, 0, 2 * Math.PI);
+                    ctx.fill();
+                    
+                    // 绘制白色边框
+                    ctx.strokeStyle = 'white';
+                    ctx.lineWidth = borderWidth;
+                    ctx.beginPath();
+                    ctx.arc(pixelX, pixelY, radius, 0, 2 * Math.PI);
+                    ctx.stroke();
+                    
+                    if (index === this.currentIteration) {
+                        ctx.shadowBlur = 0;
+                    }
+                    
+                    // 添加详细标签
+                    if (point.type === 'initial' || point.type === 'identity') {
+                        ctx.fillStyle = color;
+                        const fontSize = 11;
+                        ctx.font = 'bold ' + fontSize + 'px Inter';
+                        ctx.textAlign = 'center';
+                        
+                        const label = `x${point.iteration} = ${point.x.toFixed(4)}`;
+                        const offsetY = point.type === 'initial' ? -radius - 15 : radius + 15;
+                        
+                        ctx.fillText(label, pixelX, pixelY + offsetY);
+                    }
+                });
+            }
+            
+            drawLegend(ctx, canvas, viewType) {
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+                ctx.fillRect(10, 10, 220, 80);
+                
+                ctx.strokeStyle = '#ddd';
+                ctx.lineWidth = 1;
+                ctx.strokeRect(10, 10, 220, 80);
+                
+                ctx.font = '12px Inter';
+                ctx.textAlign = 'left';
+                
+                // 函数曲线
+                ctx.strokeStyle = '#2563eb';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.moveTo(20, 30);
+                ctx.lineTo(40, 30);
+                ctx.stroke();
+                ctx.fillStyle = '#2563eb';
+                ctx.fillText('y = 1/2(x + 4/x)', 50, 35);
+                
+                // 恒等线
+                ctx.strokeStyle = '#10b981';
+                ctx.lineWidth = 2;
+                ctx.setLineDash([5, 5]);
+                ctx.beginPath();
+                ctx.moveTo(20, 50);
+                ctx.lineTo(40, 50);
+                ctx.stroke();
+                ctx.setLineDash([]);
+                ctx.fillStyle = '#10b981';
+                ctx.fillText('y = x', 50, 55);
+                
+                // 收敛点
+                ctx.fillStyle = '#ef4444';
+                ctx.beginPath();
+                ctx.arc(25, 70, 4, 0, 2 * Math.PI);
+                ctx.fill();
+                ctx.fillText('收敛点: 2', 50, 75);
+            }
+            
+            updateMagnifier() {
+                if (!this.magnifierCanvas || this.currentView !== 'full') return;
+                
+                const magCtx = this.magnifierCtx;
+                const magCanvas = this.magnifierCanvas;
+                
+                magCtx.clearRect(0, 0, magCanvas.width, magCanvas.height);
+                
+                // 放大镜配置
+                const magX = this.convergencePoint;
+                const magY = this.convergencePoint;
+                const magSize = 0.5; // 放大镜显示的范围大小
+                
+                // 绘制放大的网格
+                magCtx.strokeStyle = 'rgba(150, 150, 150, 0.4)';
+                magCtx.lineWidth = 1;
+                
+                const gridStep = 0.02;
+                for (let x = magX - magSize; x <= magX + magSize; x += gridStep) {
+                    const pixelX = (x - (magX - magSize)) / (2 * magSize) * magCanvas.width;
+                    magCtx.beginPath();
+                    magCtx.moveTo(pixelX, 0);
+                    magCtx.lineTo(pixelX, magCanvas.height);
+                    magCtx.stroke();
+                }
+                
+                for (let y = magY - magSize; y <= magY + magSize; y += gridStep) {
+                    const pixelY = magCanvas.height - (y - (magY - magSize)) / (2 * magSize) * magCanvas.height;
+                    magCtx.beginPath();
+                    magCtx.moveTo(0, pixelY);
+                    magCtx.lineTo(magCanvas.width, pixelY);
+                    magCtx.stroke();
+                }
+                
+                // 绘制放大的函数
+                magCtx.strokeStyle = '#2563eb';
+                magCtx.lineWidth = 4;
+                magCtx.beginPath();
+                
+                for (let x = magX - magSize; x <= magX + magSize; x += 0.001) {
+                    const y = this.function(x);
+                    if (y >= magY - magSize && y <= magY + magSize) {
+                        const pixelX = (x - (magX - magSize)) / (2 * magSize) * magCanvas.width;
+                        const pixelY = magCanvas.height - (y - (magY - magSize)) / (2 * magSize) * magCanvas.height;
+                        if (x === magX - magSize) {
+                            magCtx.moveTo(pixelX, pixelY);
+                        } else {
+                            magCtx.lineTo(pixelX, pixelY);
+                        }
+                    }
+                }
+                magCtx.stroke();
+                
+                // 绘制放大的恒等线
+                magCtx.strokeStyle = '#10b981';
+                magCtx.lineWidth = 3;
+                magCtx.setLineDash([5, 5]);
+                magCtx.beginPath();
+                magCtx.moveTo(0, magCanvas.height);
+                magCtx.lineTo(magCanvas.width, 0);
+                magCtx.stroke();
+                magCtx.setLineDash([]);
+                
+                // 绘制放大的收敛点
+                const centerX = magCanvas.width / 2;
+                const centerY = magCanvas.height / 2;
+                
+                magCtx.shadowColor = '#ef4444';
+                magCtx.shadowBlur = 20;
+                magCtx.fillStyle = '#ef4444';
+                magCtx.beginPath();
+                magCtx.arc(centerX, centerY, 12, 0, 2 * Math.PI);
+                magCtx.fill();
+                magCtx.shadowBlur = 0;
+                
+                magCtx.strokeStyle = 'white';
+                magCtx.lineWidth = 4;
+                magCtx.beginPath();
+                magCtx.arc(centerX, centerY, 12, 0, 2 * Math.PI);
+                magCtx.stroke();
+                
+                // 绘制当前迭代点的放大视图
+                if (this.currentIteration > 0 && this.points.length > 0) {
+                    const currentPoint = this.points[this.currentIteration];
+                    if (Math.abs(currentPoint.x - magX) <= magSize && Math.abs(currentPoint.y - magY) <= magSize) {
+                        const pixelX = (currentPoint.x - (magX - magSize)) / (2 * magSize) * magCanvas.width;
+                        const pixelY = magCanvas.height - (currentPoint.y - (magY - magSize)) / (2 * magSize) * magCanvas.height;
+                        
+                        magCtx.fillStyle = currentPoint.type === 'function' ? '#2563eb' : '#10b981';
+                        magCtx.beginPath();
+                        magCtx.arc(pixelX, pixelY, 8, 0, 2 * Math.PI);
+                        magCtx.fill();
+                        
+                        magCtx.strokeStyle = 'white';
+                        magCtx.lineWidth = 3;
+                        magCtx.beginPath();
+                        magCtx.arc(pixelX, pixelY, 8, 0, 2 * Math.PI);
+                        magCtx.stroke();
+                    }
+                }
+            }
+            
+            xToPixel(x, canvas, config) {
+                return (x - config.xMin) / (config.xMax - config.xMin) * canvas.width;
+            }
+            
+            yToPixel(y, canvas, config) {
+                return canvas.height - (y - config.yMin) / (config.yMax - config.yMin) * canvas.height;
+            }
+            
+            async animate() {
+                if (this.isAnimating && this.currentIteration < this.paths.length) {
+                    this.currentIteration++;
+                    this.drawAllViews();
+                    this.updateIterationResults();
+                    
+                    if (this.currentIteration >= this.paths.length) {
+                        this.isAnimating = false;
+                        return;
+                    }
+                    
+                    setTimeout(() => {
+                        this.animate();
+                    }, this.animationSpeed * 600);
+                }
+            }
+            
+            startAnimation() {
+                if (!this.isAnimating) {
+                    this.isAnimating = true;
+                    this.animate();
+                }
+            }
+            
+            pauseAnimation() {
+                this.isAnimating = false;
+            }
+            
+            stepThrough() {
+                if (!this.isAnimating) {
+                    if (this.currentIteration < this.paths.length) {
+                        this.currentIteration++;
+                        this.drawAllViews();
+                        this.updateIterationResults();
+                    }
+                }
+            }
+            
+            reset() {
+                this.isAnimating = false;
+                this.currentIteration = 0;
+                this.calculatePoints();
+                this.drawAllViews();
+                this.updateIterationResults();
+            }
+            
+            updateIterationResults() {
+                const container = document.getElementById('iterationResults');
+                container.innerHTML = '';
+                
+                this.iterationData.forEach((data, index) => {
+                    const isCurrent = index === Math.floor(this.currentIteration / 2);
+                    const card = document.createElement('div');
+                    card.className = `iteration-card flex justify-between items-center py-3 px-4 rounded-lg ${
+                        isCurrent ? 'bg-blue-50 border-2 border-primary' : 'bg-gray-50'
+                    }`;
+                    
+                    const errorRateText = data.errorRate > 0 ? 
+                        `(${data.errorRate.toFixed(3)}x)` : '';
+                    
+                    card.innerHTML = `
+                        <div class="flex items-center space-x-3">
+                            <span class="w-8 h-8 bg-primary text-white rounded-full flex items-center justify-center text-sm font-bold">
+                                ${data.iteration}
+                            </span>
+                            <div>
+                                <div class="font-mono text-gray-900 font-semibold">${data.value.toFixed(8)}</div>
+                                <div class="text-xs text-gray-500">误差: ${data.error.toExponential(2)} ${errorRateText}</div>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-xs text-gray-500">精度</div>
+                            <div class="font-mono text-primary font-semibold">
+                                ${this.getPrecisionText(data.error)}
+                            </div>
+                        </div>
+                    `;
+                    
+                    container.appendChild(card);
+                });
+            }
+            
+            getPrecisionText(error) {
+                if (error < 1e-12) return '12位以上';
+                if (error < 1e-10) return '10-12位';
+                if (error < 1e-8) return '8-10位';
+                if (error < 1e-6) return '6-8位';
+                if (error < 1e-4) return '4-6位';
+                if (error < 1e-2) return '2-4位';
+                return '2位以下';
+            }
+        }
+        
+        // 初始化增强版可视化器
+        document.addEventListener('DOMContentLoaded', () => {
+            new EnhancedConvergenceVisualizer();
+        });
+    </script>
+</body>
+</html>
