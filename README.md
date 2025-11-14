@@ -2,7 +2,8 @@
 
 **牛顿迭代法数列收敛可视化工具 🧮**
 
-<img width="2560" height="1440" alt="image" src="https://github.com/user-attachments/assets/4ec6c360-0fa4-4592-a4c4-55b697891552" />
+<img width="2560" height="1440" alt="image" src="https://github.com/user-attachments/assets/9858dbe3-9ad1-4369-bc77-9f82d1e0d5b5" />
+
 
 ## Project Description | 项目描述 📖
 
