@@ -6,6 +6,20 @@
     <title>数列收敛可视化 - 牛顿迭代法 </title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <!-- 引入 MathJax CDN，支持 LaTeX 语法 -->
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <!-- 可选：配置 MathJax 渲染参数（如字号、对齐方式） -->
+    <script>
+        MathJax.config = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']], // 行内公式分隔符
+                displayMath: [['$$', '$$'], ['\\[', '\\]']] // 块级公式分隔符
+            },
+            svg: {
+                fontCache: 'global'
+            }
+        };
+    </script>
     <script>
         tailwind.config = {
             theme: {
@@ -158,7 +172,7 @@
                 <div>
                     <h2 class="text-xl font-semibold text-gray-900 mb-2">牛顿迭代法求平方根</h2>
                     <p class="text-gray-600 mb-4">
-                        数列公式：X<sub>n+1</sub> = 1/2(X<sub>n</sub> + a/X<sub>n</sub>)，其中a = 4。
+                        数列公式：$$X_{n+1} = \frac{1}{2} \left( X_n + \frac{a}{X_n} \right), \quad a = 4$$
                         增强版提供了更大的收敛点显示和局部放大功能，让收敛细节更加清晰可见。
                     </p>
                     <div class="flex flex-wrap gap-2">
