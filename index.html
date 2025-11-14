@@ -6,11 +6,9 @@
     <title>数列收敛可视化 - 牛顿迭代法</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
-    <!-- 引入 MathJax CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <!-- 配置 MathJax 支持 $ 作为分隔符 -->
+    <!-- 配置 MathJax 支持 $ 作为分隔符 - 必须在加载MathJax之前 -->
     <script>
-        MathJax.config = {
+        window.MathJax = {
             tex: {
                 inlineMath: [['$', '$'], ['\\(', '\\)']], // 支持 $...$ 作为行内公式
                 displayMath: [['$$', '$$'], ['\\[', '\\]']]
@@ -20,6 +18,8 @@
             }
         };
     </script>
+    <!-- 引入 MathJax CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>
         tailwind.config = {
             theme: {
@@ -155,8 +155,7 @@
                 </div>
                 <div class="flex items-center space-x-4">
                     <span class="text-sm text-gray-600" id="aValueDisplay">a = 4</span>
-                    <!-- 修正：收敛点公式的反斜杠转义 -->
-                    <span class="text-sm text-gray-600 bg-red-100 text-red-800 px-2 py-1 rounded-full" id="convergencePointDisplay">收敛点: $\\sqrt{4} = 2.0000$</span>
+                    <span class="text-sm text-gray-600 bg-red-100 text-red-800 px-2 py-1 rounded-full" id="convergencePointDisplay">收敛点: $\sqrt{4} = 2.0000$</span>
                 </div>
             </div>
         </div>
@@ -173,9 +172,8 @@
                 <div>
                     <h2 class="text-xl font-semibold text-gray-900 mb-2">牛顿迭代法求平方根</h2>
                     <p class="text-gray-600 mb-4">
-                        <!-- 修正：递推公式和文本中的公式 -->
                         数列递推公式：$$X_{n+1} = \frac{1}{2} \left( X_n + \frac{a}{X_n} \right)$$
-                        其中 $a > 0$ 为自定义参数，数列收敛于 $\\sqrt{a}$。增强版提供更大的收敛点显示和局部放大功能，让收敛细节更加清晰可见。
+                        其中 $a > 0$ 为自定义参数，数列收敛于 $\sqrt{a}$。增强版提供更大的收敛点显示和局部放大功能，让收敛细节更加清晰可见。
                     </p>
                     <div class="flex flex-wrap gap-2">
                         <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">自定义参数</span>
@@ -287,7 +285,7 @@
                 <div class="bg-white/70 backdrop-blur-sm rounded-2xl shadow-lg p-6 border border-gray-200/50">
                     <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
                         <i class="fa fa-table text-primary mr-2"></i>
-                        迭代结果分析（收敛目标：$\\sqrt{a}$）
+                        迭代结果分析（收敛目标：$\sqrt{a}$）
                     </h3>
                     <div class="space-y-3 max-h-64 overflow-y-auto pr-2" id="iterationResults">
                         <!-- 结果将在这里动态生成 -->
@@ -307,7 +305,7 @@
                         <div class="flex items-center space-x-4 text-sm text-gray-600">
                             <div class="flex items-center space-x-2">
                                 <div class="w-4 h-4 bg-primary rounded-full"></div>
-                                <span>$y = \\frac{1}{2} \\left( x + \\frac{a}{x} \\right)$</span>
+                                <span>$y = \frac{1}{2} \left( x + \frac{a}{x} \right)$</span>
                             </div>
                             <div class="flex items-center space-x-2">
                                 <div class="w-4 h-4 bg-secondary rounded-full"></div>
@@ -315,7 +313,7 @@
                             </div>
                             <div class="flex items-center space-x-2">
                                 <div class="w-4 h-4 bg-danger rounded-full"></div>
-                                <span>收敛点 $\\sqrt{a}$</span>
+                                <span>收敛点 $\sqrt{a}$</span>
                             </div>
                         </div>
                     </div>
@@ -336,7 +334,7 @@
                     <div class="flex justify-between items-center mb-4">
                         <h3 class="text-lg font-semibold text-gray-900 flex items-center">
                             <i class="fa fa-search-plus text-primary mr-2"></i>
-                            收敛点放大视图（$\\sqrt{a}$ 附近）
+                            收敛点放大视图（$\sqrt{a}$ 附近）
                         </h3>
                         <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
                             <i class="fa fa-search mr-1"></i>
@@ -362,7 +360,7 @@
                     <div class="bg-white/70 backdrop-blur-sm rounded-2xl shadow-lg p-6 border border-gray-200/50">
                         <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
                             <i class="fa fa-search-plus text-primary mr-2"></i>
-                            放大视图（$\\sqrt{a}$ 附近）
+                            放大视图（$\sqrt{a}$ 附近）
                         </h3>
                         <canvas id="dualZoomCanvas" width="400" height="400" 
                                 class="w-full h-auto border border-gray-200/50 rounded-lg bg-white/50 shadow-inner"></canvas>
@@ -383,15 +381,15 @@
                     <p class="text-gray-600 text-sm">
                         牛顿迭代法求解 $f(x) = x^2 - a = 0$ 时，迭代公式为：
                         $$X_{n+1} = X_n - \frac{f(X_n)}{f'(X_n)} = \frac{1}{2} \left( X_n + \frac{a}{X_n} \right)$$
-                        具有二次收敛性，即误差满足 $|X_{n+1} - \\sqrt{a}| \leq C |X_n - \\sqrt{a}|^2$（$C$ 为常数），收敛速度极快。
+                        具有二次收敛性，即误差满足 $|X_{n+1} - \sqrt{a}| \leq C |X_n - \sqrt{a}|^2$（$C$ 为常数），收敛速度极快。
                     </p>
                 </div>
                 <div>
                     <h4 class="font-semibold text-gray-900 mb-2">收敛条件</h4>
                     <p class="text-gray-600 text-sm">
-                        对任意初始值 $X_0 > 0$，数列 $\{X_n\}$ 严格递减且收敛于 $\\sqrt{a}$。
+                        对任意初始值 $X_0 > 0$，数列 $\{X_n\}$ 严格递减且收敛于 $\sqrt{a}$。
                         收敛速度与初始值无关，最终都会快速逼近收敛点。
-                        迭代过程满足：$X_n \geq \\sqrt{a}$（$n \geq 1$），即从第二次迭代开始恒大于等于收敛值。
+                        迭代过程满足：$X_n \geq \sqrt{a}$（$n \geq 1$），即从第二次迭代开始恒大于等于收敛值。
                     </p>
                 </div>
                 <div>
@@ -531,7 +529,7 @@
                 // 更新a参数显示
                 document.getElementById('aValueDisplay').textContent = `a = ${this.a}`;
                 document.getElementById('aValueSliderDisplay').textContent = this.a;
-                // 修正：收敛点公式的反斜杠转义（JavaScript中用\\）
+                // JavaScript字符串中需要双反斜杠
                 document.getElementById('convergencePointDisplay').innerHTML = 
                     `收敛点: $\\sqrt{${this.a}} = ${this.convergencePoint.toFixed(4)}$`;
                 
@@ -882,7 +880,7 @@
                 ctx.stroke();
                 ctx.setLineDash([]);
                 
-                // 标签（修正反斜杠）
+                // 标签 - Canvas中不需要双反斜杠
                 ctx.fillStyle = '#ef4444';
                 const fontSize = viewType.includes('zoom') ? 14 : 12;
                 ctx.font = 'bold ' + fontSize + 'px Inter';
@@ -1010,7 +1008,7 @@
                 ctx.font = '12px Inter';
                 ctx.textAlign = 'left';
                 
-                // 函数曲线标签（修正反斜杠）
+                // 函数曲线标签 - Canvas中不需要公式，直接用普通文本
                 ctx.strokeStyle = '#2563eb';
                 ctx.lineWidth = 3;
                 ctx.beginPath();
@@ -1018,7 +1016,7 @@
                 ctx.lineTo(40, 30);
                 ctx.stroke();
                 ctx.fillStyle = '#2563eb';
-                ctx.fillText('$y = \\frac{1}{2}\\left( x + \\frac{a}{x} \\right)$', 50, 35);
+                ctx.fillText('y = 1/2(x + a/x)', 50, 35);
                 
                 // 恒等线标签
                 ctx.strokeStyle = '#10b981';
@@ -1030,14 +1028,14 @@
                 ctx.stroke();
                 ctx.setLineDash([]);
                 ctx.fillStyle = '#10b981';
-                ctx.fillText('$y = x$', 50, 55);
+                ctx.fillText('y = x', 50, 55);
                 
-                // 收敛点标签（修正反斜杠）
+                // 收敛点标签 - Canvas中不需要公式，直接用普通文本
                 ctx.fillStyle = '#ef4444';
                 ctx.beginPath();
                 ctx.arc(25, 70, 4, 0, 2 * Math.PI);
                 ctx.fill();
-                ctx.fillText(`收敛点: $\\sqrt{${this.a}}$`, 50, 75);
+                ctx.fillText(`收敛点: √${this.a}`, 50, 75);
             }
             
             updateMagnifier() {
