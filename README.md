@@ -3,6 +3,9 @@
 **牛顿迭代法数列收敛可视化工具**
 
 
+
+![Project Preview](https://agent.doubao.com.cn/obj/eden-cn/upnbsw-tss/ljhwZthlaukjlkulzlp/super_doubao/29043304404267778/0cfeb7e8c3a6cee8d6ab8188af84b430/WebsiteDeploy/enhanced_convergence_visualization.html)
+
 ## Project Description | 项目描述
 
 An interactive visualization tool for demonstrating the convergence process of Newton's iteration method for square root calculation. This tool vividly shows how the sequence Xₙ₊₁ = 1/2(Xₙ + a/Xₙ) converges to √a.
@@ -203,3 +206,97 @@ xₙ₊₁ = xₙ - f(xₙ)/f'(xₙ) = xₙ - (xₙ² - a)/(2xₙ) = 1/2(xₙ + 
 
 * **双视图**: 并排对比显示
 
+## Installation & Deployment | 安装部署
+
+### Local Development | 本地开发
+
+
+
+```
+\# Clone the repository
+
+git clone https://github.com/yourusername/newton-iteration-visualization.git
+
+\# Navigate to project directory
+
+cd newton-iteration-visualization
+
+\# Open index.html in browser
+
+open enhanced\_convergence\_visualization.html
+```
+
+### Deployment Options | 部署选项
+
+
+
+* **Static Hosting**: Deploy to Netlify, Vercel, or GitHub Pages
+
+* **Web Server**: Host on any web server supporting static files
+
+* **CDN**: Serve through content delivery network for better performance
+
+* **静态托管**: 部署到 Netlify、Vercel 或 GitHub Pages
+
+* **Web 服务器**: 托管在任何支持静态文件的 Web 服务器上
+
+* **CDN**: 通过内容分发网络提供服务，提升性能
+
+## Contributing | 贡献指南
+
+### How to Contribute | 如何贡献
+
+
+
+1. **Fork the repository**
+
+2. **Create a feature branch** (`git checkout -b feature/amazing-feature`)
+
+3. **Commit your changes** (`git commit -m 'Add some amazing feature'`)
+
+4. **Push to the branch** (`git push origin feature/amazing-feature`)
+
+5. **Open a Pull Request**
+
+6. **Fork 仓库**
+
+7. **创建特性分支** (`git checkout -b feature/amazing-feature`)
+
+8. **提交更改** (`git commit -m 'Add some amazing feature'`)
+
+9. **推送到分支** (`git push origin feature/amazing-feature`)
+
+10. **打开 Pull Request**
+
+### Feature Requests | 特性请求
+
+* Support for different values of `a`
+
+* 3D visualization of convergence surfaces
+
+* Historical comparison of different root-finding methods
+
+* Export animation to video format
+
+* 支持不同的`a`值
+
+* 收敛曲面的 3D 可视化
+
+* 不同求根方法的历史比较
+
+* 将动画导出为视频格式
+
+## License | 许可证
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+本项目采用 MIT 许可证 - 详见 LICENSE 文件。
+
+
+***
+
+**Repository Name**: `newton-iteration-visualization`
+
+**Version**: 2.0.0
+
+**Last Updated**: November 14, 2025
